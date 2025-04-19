@@ -1,6 +1,11 @@
 #include "socket.h"
+#include <ArduinoJson.h>
+#include "helper.h"
 
+int Socket::_runControl = 0;
+int Socket::_turnControl = 0;
 bool Socket::_isConnected = false;
+Line *Socket::_line = nullptr; 
 WebSocketsServer Socket::webSocket = WebSocketsServer(81);
 
 Socket::Socket() {}
@@ -10,52 +15,48 @@ void Socket::handleWebSocketMessage(uint8_t num, WStype_t type, uint8_t *payload
     if (type == WStype_TEXT)
     {
         String message = String((char *)payload); 
-        int separatorIndex = message.indexOf('|');
-
-        if (separatorIndex > 0)
-        {
-            String command = message.substring(0, separatorIndex);
-            String value = message.substring(separatorIndex + 1);
-            
-            if (command == "speed") {
-                _speed = value.toInt();
-            } else if (command == "mode") {
-                _mode = value.toInt();
-            } else if (command == "control") {
-                _codes = value.toInt();
-            }
-        }
-        else
-        {
-            Serial.println("⚠️ Định dạng sai, không tìm thấy ký tự |");
-        }
-
-        webSocket.sendTXT(num, "ESP32 đã nhận: " + message);
+        JsonDocument storage;
+        deserializeJson(storage, message);
+        _runControl = storage["run"].as<int>();
+        _turnControl = storage["turn"].as<int>();
+        webSocket.sendTXT(num, converseLine(_line->getRawLine()).c_str()); 
     }
-
     else if (type == WStype_DISCONNECTED)
     {
-        _isConnected = false;
+        _isConnected = webSocket.connectedClients() > 0; 
     }
 
     else if (type == WStype_CONNECTED)
     {
+        webSocket.sendTXT(num, converseConnect(_line->getLowLine(), _line->getLowLine(), _line->getRawLine()).c_str()); 
         _isConnected = true;
     }
 }
 
 
-void Socket::initSocket()
+void Socket::initSocket(Line *line )
 {
-    webSocket.begin();
-    webSocket.onEvent(handleWebSocketMessage); // static function được chấp nhận
+    _line = line; 
+    webSocket.begin(); 
+    webSocket.onEvent(handleWebSocketMessage); 
 }
 
 void Socket::soketLoop()
 {
     webSocket.loop();
 }
-
+bool Socket::isConnected()
+{
+    return _isConnected;
+}
+int Socket::getRun()
+{
+    return _runControl;
+}
+int Socket::getTurn()
+{
+    return _turnControl;
+}
 Socket::~Socket()
 {
     webSocket.close();

@@ -1,0 +1,25 @@
+{
+    "files.associations": {
+        "*.tsx": "typescriptreact",
+        "*.gpmcode": "json",
+        "*.tcc": "cpp",
+        "istream": "cpp",
+        "typeinfo": "cpp",
+        "array": "cpp",
+        "deque": "cpp",
+        "string": "cpp",
+        "unordered_map": "cpp",
+        "unordered_set": "cpp",
+        "vector": "cpp",
+        "functional": "cpp",
+        "iterator": "cpp",
+        "memory_resource": "cpp",
+        "optional": "cpp",
+        "fstream": "cpp",
+        "ostream": "cpp",
+        "sstream": "cpp",
+        "streambuf": "cpp",
+        "tuple": "cpp",
+        "utility": "cpp"
+    }
+}

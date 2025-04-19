@@ -1,4 +1,4 @@
-
+#pragma once
 // sonic
 #define sonicTrig 13 
 #define sonicEcho 12 
@@ -35,3 +35,15 @@
 //wifi
 #define wifiSsid "hau"
 #define wifiPassword "12345679"
+
+// pid parameters
+const float Kp = 30.0;
+const float Ki = 0.0;
+const float Kd = 5.0;
+
+
+// pid battery
+#define R1 10000.0
+#define R2 10000.0
+#define R3 10000.0
+const int pinBattery = 36;

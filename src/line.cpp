@@ -80,6 +80,76 @@ int *Line::getLine()
     }
     return _line;
 }
+int* Line::getRawLine()
+{
+    static int rawLine[5];
+    for (int i = 0; i < 5; i++) {
+        rawLine[i] = analogRead(_pin[i]);
+    }
+    return rawLine;
+}
+int *Line::getLowLine()
+{
+    return _lowLine;
+}
+int *Line::getHighLine()
+{
+    return _highLine;
+}
+float Line::getLineError()
+{
+  getLine(); // cập nhật mảng _line[5]
+
+  const float weights[5] = { -2.0, -1.0, 0.0, 1.0, 2.0 };
+  float error = 0.0;
+  int sum = 0;
+  int activeCount = 0;
+
+  for (int i = 0; i < 5; i++) {
+    if (_line[i] == 1) {
+      error += weights[i];
+      sum++;
+    }
+  }
+
+  // PHÁT HIỆN TÌNH HUỐNG ĐẶC BIỆT
+  if (sum == 0) {
+    _lineState = LINE_LOST;
+    return 0.0;
+  }
+
+  if (_line[0] == 1 && _line[4] == 1 && sum == 2) {
+    _lineState = LINE_JUNCTION;
+    return 0.0; // hoặc return giá trị đặc biệt nếu cần
+  }
+
+  if (_line[0] == 1 && sum == 1) {
+    _lineState = LINE_HARD_LEFT;
+    return -2.5;
+  }
+
+  if (_line[4] == 1 && sum == 1) {
+    _lineState = LINE_HARD_RIGHT;
+    return 2.5;
+  }
+
+  // Nếu không phải trường hợp đặc biệt
+  float finalError = error / sum;
+
+  if (finalError < -1.0) {
+    _lineState = LINE_LEFT;
+  } else if (finalError > 1.0) {
+    _lineState = LINE_RIGHT;
+  } else {
+    _lineState = LINE_CENTERED;
+  }
+
+  return finalError;
+}
+
+LineState Line::getLineState() {
+  return _lineState;
+}
 int Line::getLineAt(int index) {
     if (index < 0 || index >= 5) return -1;
     int value = analogRead(_pin[index]);

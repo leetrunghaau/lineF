@@ -5,6 +5,15 @@
 #include "l298.h"
 #include "pinConfig.h"
 
+enum LineState {
+    LINE_LOST,
+    LINE_CENTERED,
+    LINE_LEFT,
+    LINE_RIGHT,
+    LINE_JUNCTION,
+    LINE_HARD_LEFT,
+    LINE_HARD_RIGHT
+  };
 class Line
 {
 private:
@@ -15,7 +24,7 @@ private:
     int _highLine[5];
     int _calibrateLine[5];
     int _pin[5];
-
+    LineState _lineState = LINE_CENTERED;
     void initPin();
 
 public:
@@ -26,6 +35,11 @@ public:
     void setMotor(L298 *motor);
     void calibrateLine();
     int *getLine();
+    int *getRawLine();
+    int *getLowLine();
+    int *getHighLine();
+    float getLineError();
+    LineState getLineState();
     int getLineAt(int index);
     ~Line();
 };

@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Arduino.h"
 #include "pinConfig.h"
 #include "imu.h"
@@ -20,7 +22,7 @@ public:
     void backward(int speed = 255);
     void left(int speed = 255);
     void right(int speed = 255);
-
+    void move(int leftSpeed, int rightSpeed); 
     void turnLeftAngle(int angle, int speed = 120);
     void turnRightAngle(int angle, int speed = 120);
     ~L298();

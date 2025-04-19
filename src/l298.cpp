@@ -65,7 +65,43 @@ void L298::right(int speed)
     analogWrite(_enableA, 0);
     analogWrite(_enableB, speed);
 };
+void L298::move(int leftSpeed, int rightSpeed)
+{
+    if (leftSpeed > 0)
+    {
+        digitalWrite(_inputA1, HIGH);
+        digitalWrite(_inputA2, LOW);
+    }
+    else if (leftSpeed < 0)
+    {
+        digitalWrite(_inputA1, LOW);
+        digitalWrite(_inputA2, HIGH);
+    }
+    else
+    {
+        digitalWrite(_inputA1, LOW);
+        digitalWrite(_inputA2, LOW);
+    }
 
+    if (rightSpeed > 0)
+    {
+        digitalWrite(_inputB1, HIGH);
+        digitalWrite(_inputB2, LOW);
+    }
+    else if (rightSpeed < 0)
+    {
+        digitalWrite(_inputB1, LOW);
+        digitalWrite(_inputB2, HIGH);
+    }
+    else
+    {
+        digitalWrite(_inputB1, LOW);
+        digitalWrite(_inputB2, LOW);
+    }
+
+    analogWrite(_enableA, abs(leftSpeed));
+    analogWrite(_enableB, abs(rightSpeed));
+}
 void L298::turnLeftAngle(int angle, int speed)
 {
     float startYaw = _imu->getYaw();
