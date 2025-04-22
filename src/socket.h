@@ -19,8 +19,10 @@ public:
     Socket();
     void initSocket(Line *line = nullptr);
     void soketLoop();
+
     int getRun();
     int getTurn();
     bool isConnected();
+    void setLine(Line *line);
     ~Socket();
 };

@@ -28,7 +28,7 @@ void Socket::handleWebSocketMessage(uint8_t num, WStype_t type, uint8_t *payload
 
     else if (type == WStype_CONNECTED)
     {
-        webSocket.sendTXT(num, converseConnect(_line->getLowLine(), _line->getLowLine(), _line->getRawLine()).c_str()); 
+        webSocket.sendTXT(num, converseConnect(_line->getLowLine(), _line->getHighLine(), _line->getRawLine()).c_str()); 
         _isConnected = true;
     }
 }
@@ -48,6 +48,10 @@ void Socket::soketLoop()
 bool Socket::isConnected()
 {
     return _isConnected;
+}
+void Socket::setLine(Line *line)
+{
+    _line = line; 
 }
 int Socket::getRun()
 {

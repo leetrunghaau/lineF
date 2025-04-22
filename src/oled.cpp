@@ -1,4 +1,5 @@
 #include "oled.h"
+#include <Wire.h>
 
 Oled::Oled() : display(screenWidth, screenHeight, &Wire, oledReset) {}
 
@@ -6,16 +7,29 @@ void Oled::init()
 {
     if (!display.begin(SSD1306_SWITCHCAPVCC, SSD1306_ADDRESS)) {
         Serial.println(F("SSD1306 initialization failed!"));
-        while (true); // Dừng chương trình nếu lỗi
+        while (true);
     }
 
     display.clearDisplay();
     display.display();
+    this->debug("Hello to my robot!");
+    delay(1000);
 }
 
 void Oled::clear()
 {
     display.clearDisplay();
+}
+void Oled::debug(const String &text, int delayTime)
+{
+    display.clearDisplay();
+    display.setTextSize(1);
+    display.setTextColor(SSD1306_WHITE);
+    display.setCursor(0, 0);
+    display.println(text);
+    display.display();
+    Serial.println(text);
+    delay(delayTime);
 }
 
 void Oled::showText(const String &text, int x, int y, int size)
@@ -56,6 +70,4 @@ int Oled::getMode()
 
 Oled::~Oled()
 {
-    // Destructor có thể dùng để clear hay tắt màn nếu cần
-
 }

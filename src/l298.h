@@ -16,7 +16,7 @@ private:
     Imu *_imu;
 
 public:
-    L298(Imu *imuSensor);
+    L298();
     void stop();
     void forward(int speed = 255);
     void backward(int speed = 255);
@@ -25,5 +25,6 @@ public:
     void move(int leftSpeed, int rightSpeed); 
     void turnLeftAngle(int angle, int speed = 120);
     void turnRightAngle(int angle, int speed = 120);
+    void setImu(Imu *imuSensor);
     ~L298();
 };

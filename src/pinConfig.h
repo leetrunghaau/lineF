@@ -1,49 +1,74 @@
 #pragma once
-// sonic
-#define sonicTrig 13 
-#define sonicEcho 12 
+// 🟢 SONIC
+#define sonicTrig 18 // 🟢
+#define sonicEcho 19 // 🟢
 
-// l298
-#define enableAPin 0
-#define enableBPin 0
-#define inputA1Pin 0
-#define inputA2Pin 0
-#define inputB1Pin 0
-#define inputB2Pin 0
+// 🟢 L298 – Motor Driver
+#define enableAPin 14 // PWM            // 🟢
+#define enableBPin 27 // PWM            // 🟢
+#define inputA1Pin 26 // 🟢
+#define inputA2Pin 25 // 🟢
+#define inputB1Pin 33 // 🟢
+#define inputB2Pin 4 // 🟢
 
-// i2c address 
-#define QMC5883L_ADDRESS 0x0D
+// 🟢 I2C
+#define I2C_SDA 21 // 🟢
+#define I2C_SCL 22 // 🟢
+
+// 🟢 OLED & Sensor Address
+#define QMC5883L_ADDRESS 0x67 // bị hư
 #define MPU6050_ADDRESS 0x68
 #define BMP180_ADDRESS 0x1E
-#define SSD1306_ADDRESS 0x00
+#define SSD1306_ADDRESS 0x3C
 
-//oled
+// 🟢 OLED Config
 #define screenWidth 128
 #define screenHeight 64
 #define oledReset -1
 
+// 🟢 buzzer
+#define buzzerPin 23 // Buzzer Pin     //   🟢
+#define ledPin 2     // LED Pin        //
 
-//line
-#define line1Pin 34
-#define line2Pin 35
-#define line3Pin 32
-#define line4Pin 33
-#define line5Pin 25
+// 🟢 LINE SENSOR – Analog Input Only
+#define line1Pin 36 // VP             // 🟢
+#define line2Pin 39 // VN             // 🟢
+#define line3Pin 34 // 🟢
+#define line4Pin 35 // 🟢
+#define line5Pin 32  // 🟢
 
 
 
-//wifi
+// 🟢 WiFi
 #define wifiSsid "hau"
 #define wifiPassword "12345679"
 
-// pid parameters
-const float Kp = 30.0;
-const float Ki = 0.0;
-const float Kd = 5.0;
+// 🧠 PID
+#define Kp 30.0
+#define Ki 0.0
+#define Kd 5.0
+#define maxSpeed 255
+#define minSpeed 0
+#define baseSpeed 200
+#define maxBaseSpeed 255
+#define minBaseSpeed 0
+#define maxError 2.0
+
+// 🟢 Battery ADC
+#define pinBattery 13 // ADC OK         // 🟢
+#define R1 20000.0
+#define R2 5000.0
+#define hightBattery 12.6
+#define lowBattery 11.1
 
 
-// pid battery
-#define R1 10000.0
-#define R2 10000.0
-#define R3 10000.0
-const int pinBattery = 36;
+enum LineState {
+    LINE_LOST,
+    LINE_CENTERED,
+    LINE_LEFT,
+    LINE_RIGHT,
+    LINE_JUNCTION,
+    LINE_HARD_LEFT,
+    LINE_HARD_RIGHT,
+    LINE_GLITCH
+  };
