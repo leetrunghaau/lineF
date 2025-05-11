@@ -14,9 +14,12 @@ private:
     float _batteryVoltage; 
     float _batteryLevel;   
     void loadBattery();
+    
 
 public:
     Battery();
+    void init();
+    void info();
     ~Battery();
     float getBatteryVoltage();            
     float getBatteryLevel();              

@@ -40,11 +40,11 @@ void Web::begin()
         #run-slider {
             position: absolute;
             left: 5%;
-            top: 40%;
+            top: 35%;
             transform: rotate(-90deg) translateX(-50%);
             transform-origin: left center;
             width: 80vh;
-            height: 100px;
+            height: 70px;
             -webkit-appearance: none;
             background: #444;
             border-radius: 15px;
@@ -52,8 +52,25 @@ void Web::begin()
 
         #run-slider::-webkit-slider-thumb {
             -webkit-appearance: none;
-            width: 100px;
-            height: 100px;
+            width: 60px;
+            height: 60px;
+            background: #28a745;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        #speed-slider {
+            width: 100%;
+            height: 70px;
+            -webkit-appearance: none;
+            background: #444;
+            border-radius: 15px;
+        }
+
+        #speed-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 60px;
+            height: 60px;
             background: #28a745;
             border-radius: 50%;
             cursor: pointer;
@@ -61,9 +78,9 @@ void Web::begin()
 
         .right-panel {
             position: absolute;
-            left: 20%;
+            left: 15%;
             top: 0;
-            width: 78%;
+            width: 70%;
             height: 100%;
             display: flex;
             flex-direction: column;
@@ -76,8 +93,8 @@ void Web::begin()
         .switch {
             position: relative;
             display: inline-block;
-            width: 60px;
-            height: 34px;
+            width: 50px;
+            height: 25px;
         }
 
         .switch input {
@@ -100,10 +117,10 @@ void Web::begin()
         .slider:before {
             position: absolute;
             content: "";
-            height: 26px;
+            height: 25px;
             width: 26px;
-            left: 4px;
-            bottom: 4px;
+            left: 0px;
+            bottom: 0px;
             background-color: white;
             transition: .4s;
         }
@@ -125,23 +142,33 @@ void Web::begin()
         }
 
         .control-box {
+            margin: 0px 10px;
             padding: 5px 30px;
             background-color: #444;
             border-radius: 15px;
         }
 
         .turn-slider {
-            width: 100%;
-            height: 100px;
+
+
+            position: absolute;
+            left: 94%;
+            top: 35%;
+            transform: rotate(-90deg) translateX(-50%);
+            transform-origin: left center;
+            width: 80vh;
+            height: 70px;
             -webkit-appearance: none;
             background: #444;
             border-radius: 15px;
         }
 
         .turn-slider::-webkit-slider-thumb {
+
+
             -webkit-appearance: none;
-            width: 100px;
-            height: 100px;
+            width: 60px;
+            height: 60px;
             background: #28a745;
             border-radius: 50%;
             cursor: pointer;
@@ -170,76 +197,163 @@ void Web::begin()
             width: 10px;
             border-radius: 10px;
         }
+
+        .header-control {
+            display: flex;
+            justify-items: center;
+            align-items: center;
+        }
     </style>
 </head>
 
 <body>
     <div class="main">
-        <!-- Thanh trượt dọc -->
-        <input id="run-slider" type="range" min="-100" max="100" value="0" disabled />
+        <input id="run-slider" type="range" min="-50" max="50" value="0" disabled />
+        <input class="turn-slider" type="range" min="-50" max="50" value="0" disabled />
 
-        <!-- Khu vực bên phải -->
+
         <div class="right-panel">
-            <div class="control-box">
-                <div style="display: flex; align-items: center;">
-                    <h3 style="margin-right: 10px;">Connect the robot:</h3>
-                    <label class="switch">
-                        <input id="ws-toggle" type="checkbox" />
-                        <span class="slider round"></span>
-                    </label>
+            <div class="header-control">
+                <div class="control-box">
+                    <div style="display: flex; align-items: center;">
+                        <h3 style="margin-right: 5px;font-size: medium;">Kết nối:</h3>
+                        <label class="switch">
+                            <input id="ws-toggle" type="checkbox" />
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="control-box">
+                    <div style="display: flex; align-items: center;">
+                        <h3 style="margin-right: 5px;font-size: medium;">Line follow:</h3>
+                        <label class="switch">
+                            <input id="follow-toggle" type="checkbox" />
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="control-box">
+                    <div style="display: flex; align-items: center;">
+                        <h3 style="margin-right: 5px; font-size: medium;">Hiệu chuẩn:</h3>
+                        <label class="switch">
+                            <input id="line-toggle" type="checkbox" />
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
                 </div>
             </div>
-            <div class="line-status">
-                <div class="line-item">
-                    <div id="line1" class="line-value"></div>
+            <div style="display: flex; justify-content: space-around; width: 100%;">
+                <div class="line-status">
+                    <div class="line-item">
+                        <div id="line1" class="line-value"></div>
+                    </div>
+                    <div class="line-item">
+                        <div id="line2" class="line-value"></div>
+                    </div>
+                    <div class="line-item">
+                        <div id="line3" class="line-value"></div>
+                    </div>
+                    <div class="line-item">
+                        <div id="line4" class="line-value"></div>
+                    </div>
+                    <div class="line-item">
+                        <div id="line5" class="line-value"></div>
+                    </div>
+                </div>
+                <div style="">
+                    <p>Scale: <span id="scale-value">70</span></p>
+                    <p>↕: <span id="run-value">0</span></p>
+                    <p>↔: <span id="turn-value">0</span></p>
+                    <p id="feedback"></p>
+                </div>
+                <div style="display: flex; flex-direction: column;">
+                    <div style="margin: 5px 0px; display: flex;">
+                        <span>45=</span>
+                        <input type="text" style="background: none; color: #d8c40f; width: 100%;" id="t45" value="500">
+                    </div>
+                    <div style="margin: 5px 0px;display: flex;">
+                        <span>90=</span>
+                        <input type="text" style="background: none; color: #d8c40f; width: 100%;" id="t90" value="1100">
+                    </div>
+                    <div style="margin: 5px 0px;display: flex;">
+                        <span>T=</span>
+                        <input type="text" style="background: none; color: #d8c40f; width: 100%;" id="timeF"
+                            value="400">
+                    </div>
+                    <div style="margin: 5px 0px;display: flex;">
+                        <span>speed</span>
+                        <input type="text" style="background: none; color: #d8c40f; width: 100%;" id="bs-speed"
+                            value="2.8">
+                    </div>
+                    <button style="background-color: #28a745; border-radius: 10px; margin-top: 5px;"
+                        id="bs-send">send</button>
+                    <div style="margin-top: 5px;">
+                        <button style="background-color: #28a745; border-radius: 10px; width: 30%;"
+                            id="bs-test1">testF1</button>
+                        <button style="background-color: #28a745; border-radius: 10px; width: 35%;"
+                            id="bs-test2">testF2</button>
+                        <button style="background-color: #28a745; border-radius: 10px; width: 30%;"
+                            id="bs-test3">testF3</button>
+                    </div>
 
                 </div>
-                <div class="line-item">
-                    <div id="line2" class="line-value"></div>
-
-                </div>
-                <div class="line-item">
-                    <div id="line3" class="line-value"></div>
-                </div>
-                <div class="line-item">
-                    <div id="line4" class="line-value"></div>
-                </div>
-                <div class="line-item">
-                    <div id="line5" class="line-value"></div>
-                </div>
-
-
             </div>
 
-            <!-- Thanh trượt ngang -->
-            <input class="turn-slider" type="range" min="-100" max="100" value="0" disabled />
+
+
+            <input id="speed-slider" type="range" min="0" max="100" value="70" disabled />
+
         </div>
     </div>
 
     <script>
+        if (!("WebSocket" in window)) {
+            alert("Trình duyệt không hỗ trợ WebSocket!");
+        }
 
-
-
-
-        let lowLine = [0, 0, 0, 0, 0];
-        let highLine = [0, 0, 0, 0, 0];
-        let ws = null;
-        let debounceTimer;
         const wsToggle = document.getElementById("ws-toggle");
+        const followToggle = document.getElementById("follow-toggle");
+        const lineToggle = document.getElementById("line-toggle");
         const runSlider = document.getElementById("run-slider");
         const turnSlider = document.querySelector(".turn-slider");
-        const line = [
-            document.getElementById("line1"),
-            document.getElementById("line2"),
-            document.getElementById("line3"),
-            document.getElementById("line4"),
-            document.getElementById("line5")
-        ];
-        function setSlidersEnabled(enabled) {
+        const speedSlider = document.getElementById("speed-slider");
+        const scaleValue = document.getElementById("scale-value");
+        const runValue = document.getElementById("run-value");
+        const turnValue = document.getElementById("turn-value");
+        const feedback = document.getElementById("feedback");
+        
+
+        const T45 = document.getElementById("t45");
+        const T90 = document.getElementById("t90");
+        const timeForward = document.getElementById("timeF");
+        const bsSpeed = document.getElementById("bs-speed");
+        const bsSend = document.getElementById("bs-send");
+        const btnF1 = document.getElementById("bs-test1");
+        const btnF2 = document.getElementById("bs-test2");
+        const btnF3 = document.getElementById("bs-test3");
+
+
+        const line = Array.from({ length: 5 }, (_, i) => document.getElementById(`line${5 - i}`));
+
+        let ws = null;
+        let debounceTimer;
+        let controlState = ['disconnect', 'control', 'follow', 'calibrate', "saveCalibrate"];
+        let controlStateIndex = 0;
+        let lowLine = [0, 0, 0, 0, 0];
+        let highLine = [0, 0, 0, 0, 0];
+
+        const setConnectEnabled = (enabled) => {
             runSlider.disabled = !enabled;
             turnSlider.disabled = !enabled;
-        }
-        const setLineValue = (lineValue) => {
+            speedSlider.disabled = !enabled;
+            lineToggle.disabled = !enabled;
+            followToggle.disabled = !enabled;
+        };
+
+        const setLineValue = (fdata) => {
+            const lineValue = fdata.line
+            const strf = fdata?.f ?? ""
+            feedback.innerText = strf;
             line.forEach((lineItem, index) => {
                 let value = lineValue[index];
                 value = Math.max(value, lowLine[index])
@@ -249,90 +363,165 @@ void Web::begin()
                 lineItem.style.backgroundColor = persen > 50 ? "#dfd446" : "#28a745";
             });
         };
-        const lineInit = (dataResent) => {
-            for (let i = 0; i < 5; i++) {
-                lowLine[i] = dataResent.lowLine[i];
-                highLine[i] = dataResent.highLine[i];
-            }
-            setLineValue(dataResent.line)
 
-        }
-        function resetSliders() {
+        const lineInit = (data) => {
+            if (data.lowLine?.length === 5 && data.highLine?.length === 5) {
+                lowLine = data.lowLine;
+                highLine = data.highLine;
+                setLineValue(data.line);
+            }
+        };
+
+        const calibrated = (data) => {
+            controlStateIndex = 1;
+            lineInit(data);
+        };
+
+        const resetSliders = () => {
             runSlider.value = 0;
             turnSlider.value = 0;
-        }
+        };
 
-        function debounce(func, delay) {
-            return function (...args) {
+        const debounce = (func, delay) => {
+            return (...args) => {
                 clearTimeout(debounceTimer);
-                debounceTimer = setTimeout(() => {
-                    func(...args);
-                }, delay);
+                debounceTimer = setTimeout(() => func(...args), delay);
             };
-        }
+        };
 
-        function sendSliderData() {
+        const sendData = () => {
             if (ws && ws.readyState === WebSocket.OPEN) {
                 const data = {
-                    run: parseInt(runSlider.value),
-                    turn: parseInt(turnSlider.value)
+                    type: controlState[controlStateIndex],
+                    run: Math.round(+runSlider.value * speedSlider.value * 0.05103),
+                    turn: Math.round(+turnSlider.value * speedSlider.value * 0.05103)
                 };
+                runValue.innerText = data.run;
+                turnValue.innerText = data.turn;
                 ws.send(JSON.stringify(data));
             }
-        }
-
-        function disconnectWS() {
-            if (ws) {
+        };
+        const disconnectWS = () => {
+            if (ws && ws.readyState === WebSocket.OPEN) {
                 ws.close();
-                ws = null;
             }
-            setSlidersEnabled(false);
+            ws = null;
+            setConnectEnabled(false);
             resetSliders();
             wsToggle.checked = false;
-        }
+            controlStateIndex = 0;
+        };
 
         wsToggle.addEventListener("change", () => {
             if (wsToggle.checked) {
                 ws = new WebSocket("ws://192.168.4.1:81");
                 ws.onopen = () => {
-                    setSlidersEnabled(true);
+                    setConnectEnabled(true);
+                    controlStateIndex = 1;
                 };
-
                 ws.onmessage = (event) => {
-                    const data = JSON.parse(event.data);
-                    switch (data.type) {
+                    const msg = JSON.parse(event.data);
+                    console.log("=================", msg)
+                    if (!msg?.type) return;
+                    switch (msg.type) {
                         case "line":
-                            setLineValue(data.data);
+                            setLineValue(msg.data);
                             break;
                         case "connect":
-                            lineInit(data.data);
+                            lineInit(msg.data);
+                            break;
+                        case "calibrated":
+                            calibrated(msg.data);
                             break;
                     }
-
                 };
-
-                ws.onclose = () => {
-                    console.warn("WebSocket closed");
-                    disconnectWS();
-                };
-
-                ws.onerror = (err) => {
-                    console.error("WebSocket error:", err);
-                    disconnectWS();
-                };
+                ws.onclose = () => disconnectWS();
+                ws.onerror = () => disconnectWS();
             } else {
                 disconnectWS();
             }
         });
 
-        // Gửi dữ liệu khi kéo slider
         [runSlider, turnSlider].forEach(slider => {
-            slider.addEventListener("input", debounce(sendSliderData,30) );
+            slider.addEventListener("input", debounce(sendData, 20));
             slider.addEventListener("change", () => {
                 slider.value = 0;
-                sendSliderData();
+                sendData();
             });
         });
+        speedSlider.addEventListener("input", () => {
+            scaleValue.innerText = speedSlider.value
+        });
+
+        bsSend.addEventListener("click", () => {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                const data = {
+                    type: "setBase",
+                    T45: parseInt(T45.value),
+                    T90: parseInt(T90.value),
+                    TF: parseInt(timeForward.value),
+                    speed: parseFloat(bsSpeed.value)
+                };
+                ws.send(JSON.stringify(data));
+            }
+        })
+        btnF1.addEventListener("click", () => {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                const data = {
+                    type: "TF1"
+                };
+                ws.send(JSON.stringify(data));
+            }
+        })
+        btnF2.addEventListener("click", () => {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                const data = {
+                    type: "TF2"
+                };
+                ws.send(JSON.stringify(data));
+            }
+        })
+        btnF3.addEventListener("click", () => {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                const data = {
+                    type: "TF3"
+                };
+                ws.send(JSON.stringify(data));
+            }
+        })
+        followToggle.addEventListener("change", () => {
+            if (followToggle.checked) {
+                controlStateIndex = 2;
+                lineToggle.disabled = true;
+                runSlider.disabled = true;
+                speedSlider.disabled = true;
+                turnSlider.disabled = true;
+            } else {
+                controlStateIndex = 1;
+                lineToggle.disabled = false;
+                runSlider.disabled = false;
+                speedSlider.disabled = false;
+                turnSlider.disabled = false;
+            }
+            sendData();
+        });
+
+        lineToggle.addEventListener("change", () => {
+            if (lineToggle.checked) {
+                controlStateIndex = 3;
+                followToggle.checked = false;
+                followToggle.disabled = true;
+                wsToggle.disabled = true;
+                sendData();
+            } else {
+                controlStateIndex = 4;
+                followToggle.disabled = false;
+                wsToggle.disabled = false;
+                sendData();
+            }
+
+        });
+
         window.addEventListener("load", () => {
             document.body.addEventListener("click", () => {
                 const el = document.documentElement;
@@ -340,9 +529,9 @@ void Web::begin()
                 else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
             }, { once: true });
 
-            if (screen.orientation && screen.orientation.lock) {
+            if (screen.orientation?.lock) {
                 screen.orientation.lock("landscape").catch(() => {
-                    console.warn("Thiết bị không hỗ trợ lock landscape.");
+                    console.warn("Không thể khóa xoay màn hình.");
                 });
             }
         });
@@ -350,6 +539,7 @@ void Web::begin()
 </body>
 
 </html>
+
 )rawliteral";
 
         server.send(200, "text/html", html); });

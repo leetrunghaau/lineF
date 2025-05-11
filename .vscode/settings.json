@@ -24,6 +24,9 @@
         "string_view": "cpp",
         "initializer_list": "cpp",
         "system_error": "cpp",
-        "type_traits": "cpp"
+        "type_traits": "cpp",
+        "cmath": "cpp",
+        "random": "cpp",
+        "exception": "cpp"
     }
 }

@@ -1,3 +1,4 @@
+
 #include <WiFi.h>
 #include "web.h"
 #include "socket.h"
@@ -9,96 +10,139 @@
 #include <HCSR04.h>
 #include <Wire.h>
 #include "battery.h"
-#include "pid.h"
+#include "logic.h"
+#include "rom.h"
 
 UltraSonicDistanceSensor sonic(sonicTrig, sonicEcho);
 Oled oled;
 Imu imu;
-PID pid;
+Logic lg;
 L298 motor;
 Line line;
 Web web;
 Socket socket;
+Battery battery;
+Rom rom;
+SocketState pevState = DISCONNECTED;
 
 void lineForward()
 {
-  float error = line.getLineError();
-  int *speeds = pid.compute(error);
-  motor.move(speeds[0], speeds[1]);
-}
+  float dist = sonic.measureDistanceCm();
 
-void calibrateLine()
-{
-
-  motor.forward();
-  unsigned long startTime = millis();
-  int lowLine[5] = {4095, 4095, 4095, 4095, 4095};
-  int highLine[5]= {0, 0, 0, 0, 0};
-
-  while (millis() - startTime < 2000) 
+  if (dist < 17.0)
   {
-    oled.debug("getting line...\n " + 2000 - millis(),10);
-    for (int i = 0; i < 5; i++)
-    {
-      int value = line.getRawLineAt(i);
-      lowLine[i] = min(lowLine[i], value);
-      highLine[i] = max(highLine[i], value);
+    bool ok = lg.avoidObstacle(&motor, &sonic, &oled, &line);
+    if (!ok){
+      ///chuyển về control
     }
+    return;
   }
-  line.setLowLine(lowLine);
-  line.setHighLine(highLine);
-  line.updateCalibrateLine();
+  float error = line.getLineError();
+  int *speeds = lg.computeFE(error, motor.getBaseSpeed());
+  motor.move(speeds[0], speeds[1]);
+  oled.printMotor(speeds);
+  oled.printLineError(dist);
+
+  socket.boardcastLine(String(dist));
 }
+
 void setup()
 {
 
   Serial.begin(115200);
   while (!Serial)
     delay(10);
+  rom.init();
   Wire.begin(21, 22);
   oled.init();
-  oled.debug("sensor init...");
-  imu.init();
+  oled.showBar(0);
+
+  battery.init();
+  oled.showBar(12);
+
+  pinMode(buzzerPin, OUTPUT);
+  digitalWrite(buzzerPin, 0);
+  oled.showBar(24);
+
+  imu.init(&rom);
   imu.update();
-  motor.setImu(&imu);
-  line.setOled(&oled);
+  oled.showBar(36);
+
+  line.init(&rom);
+  oled.setLine(line.getLowLine(), line.getHighLine());
+  oled.showBar(48);
+
   WiFi.softAP(wifiSsid, wifiPassword);
-  oled.debug("ssid: " + String(wifiSsid) + "\npas: " + String(wifiSsid) + "\nip: " + WiFi.softAPIP());
-  socket.initSocket(&line);
-  web.begin(); 
-  oled.debug("ssid: " + String(wifiSsid) + "\npas: " + String(wifiSsid) + "\nip: " + WiFi.softAPIP() + "\ndone!",3000);
+  delay(1000);
+  oled.showBar(60);
+  lg.init();
 
+  socket.initSocket(&line, &motor);
+  oled.showBar(80);
 
-  oled.debug("line setup");
-  oled.debug("3");
-  oled.debug("2");
-  oled.debug("1");
-  oled.debug("lay nguong line");
-  calibrateLine();
-  oled.debug("line start");
-  oled.debug("3");
-  oled.debug("2");
-  oled.debug("1");
+  web.begin();
+  delay(1000);
+  oled.showBar(100);
+  oled.hello();
 }
 
 void loop()
 {
-
   web.handle();
   socket.soketLoop();
-  Serial.println(socket.isConnected());
-  if (!socket.isConnected())
+  SocketState state = socket.getState();
+  oled.clear();
+  switch (state)
   {
-    oled.debug("line folow",1);
+  case LINE_FOLOW:
+  {
+    if (pevState != state)
+    {
+      oled.debug("Start \n FOLOW ");
+      lg.startLogic();
+    }
     lineForward();
+    break;
   }
-  else
+  case CONTROL:
   {
-    // oled.debug("control",1);
-    int run = socket.getRun();
-    int turn = socket.getTurn();
-    int speed = map(run, -100, 100, -255, 255);
-    int turnSpeed = map(turn, -100, 100, -255, 255);
-    motor.move(speed + turnSpeed, speed - turnSpeed);
+    int *move = socket.getMove();
+    motor.move(move[0], move[1]);
+    oled.printMotor(move);
+    break;
   }
+  case START_CALIBRATE:
+  {
+    if (pevState != state)
+    {
+      oled.debug("Start \n CALIBRATE");
+      line.calibrateLine(true);
+    }
+    else
+    {
+      line.calibrateLine(false);
+    }
+    int *move = socket.getMove();
+    motor.move(move[0], move[1]);
+    oled.printMotor(move);
+    break;
+  }
+  case END_CALIBRATE:
+  {
+    motor.move(0, 0);
+    line.saveCalibration();
+    socket.emitLine();
+    oled.setLine(line.getLowLine(), line.getHighLine());
+    break;
+  }
+  default:
+    break;
+  }
+  pevState = state;
+
+  oled.printState(state);
+  oled.printBattery(battery.getBatteryVoltage());
+  oled.printLine(line.getRawLine());
+  oled.printWifiInfo(wifiSsid, wifiPassword, WiFi.softAPIP().toString());
+  oled.displayUpdate();
 }
